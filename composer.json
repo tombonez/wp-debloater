@@ -1,0 +1,39 @@
+{
+    "name": "tombonez/wp-debloater",
+    "description": "A WordPress plugin for removing unnecessary features and bloat from WordPress.",
+    "homepage": "https://github.com/tombonez/wp-debloater",
+    "type": "wordpress-muplugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tom Taylor",
+            "homepage": "https://github.com/tombonez"
+        }
+    ],
+    "keywords": [
+        "debloater",
+        "wordpress",
+        "wordpress-plugin"
+    ],
+    "support": {
+        "issues": "https://github.com/tombonez/wp-debloater/issues"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "roave/security-advisories": "dev-latest",
+        "wp-coding-standards/wpcs": "^3.0"
+    },
+    "scripts": {
+        "phpcbf": "vendor/bin/phpcbf",
+        "phpcs": "vendor/bin/phpcs"
+    }
+}
