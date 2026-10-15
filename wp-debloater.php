@@ -4,7 +4,7 @@
  * Plugin Name:  WP Debloater
  * Plugin URI:   https://github.com/tombonez/wp-debloater
  * Description:  A WordPress plugin for removing unnecessary features and bloat from WordPress.
- * Version:      0.0.1
+ * Version:      0.0.2
  * Author:       Tom Taylor
  * Author URI:   https://github.com/tombonez
  */
@@ -45,52 +45,15 @@ add_filter(
 add_filter(
 	'style_loader_tag',
 	function ( $html ) {
-		$doc = new \DOMDocument();
-		libxml_use_internal_errors( true );
-		$doc->loadHTML( '<?xml encoding="UTF-8">' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
-		libxml_clear_errors();
-
-		$xpath = new \DOMXPath( $doc );
-		foreach ( $xpath->query( '//*' ) as $link ) {
-			if ( ! $link instanceof \DOMElement ) {
-				continue;
-			}
-
-			$link->removeAttribute( 'type' );
-			$link->removeAttribute( 'id' );
-
-			$media = $link->getAttribute( 'media' );
-
-			if ( $media && 'all' !== $media ) {
-				continue;
-			}
-
-			$link->removeAttribute( 'media' );
-		}
-
-		return trim( substr( $doc->saveHTML(), 23 ) );
+		$html = preg_replace( "/\s+(?:type|id)=('|\")[^'\"]*('|\")/", '', $html );
+		return preg_replace( "/\s+media=('|\")all('|\")/", '', $html );
 	}
 );
 
 add_filter(
 	'script_loader_tag',
 	function ( $html ) {
-		$doc = new \DOMDocument();
-		libxml_use_internal_errors( true );
-		$doc->loadHTML( '<?xml encoding="UTF-8">' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
-		libxml_clear_errors();
-
-		$xpath = new \DOMXPath( $doc );
-		foreach ( $xpath->query( '//*' ) as $script ) {
-			if ( ! $script instanceof \DOMElement ) {
-				continue;
-			}
-
-			$script->removeAttribute( 'type' );
-			$script->removeAttribute( 'id' );
-		}
-
-		return trim( substr( $doc->saveHTML(), 23 ) );
+		return preg_replace( "/\s+(?:type|id)=('|\")[^'\"]*('|\")/", '', $html );
 	}
 );
 
@@ -103,7 +66,7 @@ remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
 remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
 remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
 
-add_filter( 'wp_enqueue_scripts', fn () => wp_dequeue_style( 'wp-block-library' ), 200 );
+add_action( 'wp_enqueue_scripts', fn () => wp_dequeue_style( 'wp-block-library' ), 200 );
 
 add_filter( 'feed_links_show_comments_feed', '__return_false' );
 remove_filter( 'wp_head', 'feed_links_extra', 3 );
@@ -112,7 +75,7 @@ add_filter( 'show_recent_comments_widget_style', '__return_false' );
 
 add_filter( 'use_default_gallery_style', '__return_false' );
 
-add_filter(
+add_action(
 	'template_redirect',
 	function () {
 		global $wp_rewrite;
